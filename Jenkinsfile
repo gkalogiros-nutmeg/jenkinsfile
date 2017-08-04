@@ -18,6 +18,7 @@ pipeline {
                         env.RELEASE="${env.BUILD_ID}-${env.BRANCH_NAME}-${getCommitSha}"
                     }
                 }
+		echo "${env.BUILD_ID}-${env.BRANCH_NAME}-${getCommitSha}"
                 step(
                     [
                         $class: 'GitHubCommitStatusSetter',
