@@ -15,8 +15,8 @@ pipeline {
                         env.RELEASE="${env.BUILD_ID}-${env.BRANCH_NAME}-${getCommitSha()}"
                 }
 		echo "${env.RELEASE}"
-		sh("git config --global user.email ${CHANGE_AUTHOR_EMAIL}")
-                sh("git config --global user.name ${CHANGE_AUTHOR}")
+		sh("git config --global user.email ${env.CHANGE_AUTHOR_EMAIL}")
+                sh("git config --global user.name ${env.CHANGE_AUTHOR}")
                 sh("git tag -a ${env.RELEASE} -m 'Jenkins'")
                 sh("git push --tags")
                 step(
