@@ -11,14 +11,14 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                script {
-                    if (env.BRANCH_NAME=="master"){
-                        env.RELEASE="${env.MAJOR_MINOR_VERSION}${env.BUILD_ID}"
-                    } else {
+		script{
                         env.RELEASE="${env.BUILD_ID}-${env.BRANCH_NAME}-${getCommitSha}"
-                    }
                 }
-		echo "${env.BUILD_ID}-${env.BRANCH_NAME}-${getCommitSha}"
+		echo "${env.RELEASE}"
+		sh("git config --global user.email ${CHANGE_AUTHOR_EMAIL}")
+                sh("git config --global user.name ${CHANGE_AUTHOR}")
+                sh("git tag -a ${env.RELEASE} -m 'Jenkins'")
+                sh("git push --tags")
                 step(
                     [
                         $class: 'GitHubCommitStatusSetter',
