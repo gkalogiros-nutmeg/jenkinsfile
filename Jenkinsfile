@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
 		script{
-                        env.RELEASE="${env.BUILD_ID}-${env.BRANCH_NAME}-${getCommitSha}"
+                        env.RELEASE="${env.BUILD_ID}-${env.BRANCH_NAME}-${getCommitSha()}"
                 }
 		echo "${env.RELEASE}"
 		sh("git config --global user.email ${CHANGE_AUTHOR_EMAIL}")
