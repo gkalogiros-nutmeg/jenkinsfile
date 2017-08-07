@@ -12,13 +12,15 @@ pipeline {
         stage('Build') {
             steps {
 		script{
-                        env.RELEASE="${env.BUILD_ID}-${env.BRANCH_NAME}-${getCommitSha()}"
+                        env.RELEASE="${env.BUILD_ID}-${env.BRANCH_NAME}-${currentCommitSha()}"
+			env.MASTER_RELEASE="${nextRelease()}"
                 }
 		echo "${env.RELEASE}"
-                	sh("git config --global user.email ${env.CHANGE_AUTHOR_EMAIL}")
-                	sh("git config --global user.name ${env.CHANGE_AUTHOR}")
-                	sh("git tag -a ${env.RELEASE} -m 'Jenkins'")
-                	sh("git push --tags")
+		echo "${env.MASTER_RELEASE}"
+                sh("git config --global user.email ${env.CHANGE_AUTHOR_EMAIL}")
+                sh("git config --global user.name ${env.CHANGE_AUTHOR}")
+                sh("git tag -a ${env.RELEASE} -m 'Jenkins'")
+                sh("git push --tags")
                 step(
                     [
                         $class: 'GitHubCommitStatusSetter',
@@ -61,7 +63,12 @@ pipeline {
     }
 }
 
-def getCommitSha() {
+def currentCommitSha() {
   sh "git rev-parse HEAD > .git/current-commit"
   return readFile(".git/current-commit").trim()
+}
+
+def nextRelease() {
+  sh "git tag -l --sort version:refname | awk '/^([0-9]+).([0-9]+).([0-9]+)\$/{split(\$0,v,\".\")}END{printf(\"%d.%d.%d\",v[1],v[2],v[3]+1)}' > .git/current-tag"
+  return readFile(".git/current-tag").trim()
 }
